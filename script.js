@@ -1,67 +1,104 @@
-console.log("Welcome to Tic Tac Toe")
-let music = new Audio("music.mp3")
-let audioTurn = new Audio("ting.mp3")
-let gameover = new Audio("gameover.mp3")
-let turn = "X"
-let isgameover = false;
+//Just for checking whether this file working or not
+console.log("welcome to tic tac toe");
 
-// Function to change the turn
-const changeTurn = ()=>{
-    return turn === "X"? "0": "X"
+
+//Initializing variable
+let music = new Audio('back.mp3');
+let audioTurn = new Audio('ting.mp3');
+let audioGameOver = new Audio('gameOver.mp3');
+let turn = "X";
+let boxes = document.getElementsByClassName("box");
+let gameOver = false;
+let backMusic = document.getElementById('backMusic');
+let line = document.getElementsByClassName('line');
+let x = window.matchMedia("(max-width : 800px)");
+
+
+//Function to change Turn
+const ChangeTurn = () =>{
+    return turn ==="X"?"0":"X";
 }
 
-// Function to check for a win
-const checkWin = ()=>{
-    let boxtext = document.getElementsByClassName('boxtext');
+//Fucntion for checking win
+const checkWin = () =>{
+    let boxText = document.getElementsByClassName('boxText');
     let wins = [
-        [0, 1, 2, 5, 5, 0],
-        [3, 4, 5, 5, 15, 0],
-        [6, 7, 8, 5, 25, 0],
-        [0, 3, 6, -5, 15, 90],
-        [1, 4, 7, 5, 15, 90],
-        [2, 5, 8, 15, 15, 90],
-        [0, 4, 8, 5, 15, 45],
-        [2, 4, 6, 5, 15, 135],
+        [0,1,2,0,0,0,0,0,0],
+        [3,4,5,0,10,0,0,25,0],
+        [6,7,8,0,20,0,0,50,0],
+        [0,3,6,-10,10,90,-29,25,90],
+        [1,4,7,0,10,90,0,25,90],
+        [2,5,8,10,10,90,29,25,90],
+        [0,4,8,0,10,45,2,27,39],
+        [2,4,6,0,10,135,-2,27,140],
     ]
     wins.forEach(e =>{
-        if((boxtext[e[0]].innerText === boxtext[e[1]].innerText) && (boxtext[e[2]].innerText === boxtext[e[1]].innerText) && (boxtext[e[0]].innerText !== "") ){
-            document.querySelector('.info').innerText = boxtext[e[0]].innerText + " Won"
-            isgameover = true
-            document.querySelector('.imgbox').getElementsByTagName('img')[0].style.width = "200px";
-            document.querySelector(".line").style.transform = `translate(${e[3]}vw, ${e[4]}vw) rotate(${e[5]}deg)`
-            document.querySelector(".line").style.width = "20vw";
+        if( (boxText[e[0]].innerText === boxText[e[1]].innerText ) && (boxText[e[0]].innerText === boxText[e[2]].innerText) && (boxText[e[0]].innerText !=="")){
+            document.getElementsByClassName('info')[0].innerText = boxText[e[0]].innerText + " won";
+            gameOver = true;
+            document.getElementsByClassName('gameInfo')[0].querySelector('img').style.width = '200px';
+            audioGameOver.play();
+            if(x.matches){
+                line[0].style.width = '77vw';
+                line[0].style.transform = `translate(${e[6]}vw, ${e[7]}vw) rotate(${e[8]}deg)`;
+
+            }
+            else{
+                line[0].style.width  = '24vw';
+                line[0].style.transform = `translate(${e[3]}vw, ${e[4]}vw) rotate(${e[5]}deg)`;
+            }
         }
     })
 }
 
-// Game Logic
-// music.play()
-let boxes = document.getElementsByClassName("box");
-Array.from(boxes).forEach(element =>{
-    let boxtext = element.querySelector('.boxtext');
+//Game logic
+Array.from(boxes).forEach((element)=>{
+    let boxText = element.querySelector('.boxText');
     element.addEventListener('click', ()=>{
-        if(boxtext.innerText === ''){
-            boxtext.innerText = turn;
-            turn = changeTurn();
+        if(boxText.innerText == ''){
+            boxText.innerText = turn;
             audioTurn.play();
+            turn = ChangeTurn();
+            if(!gameOver){
+                document.getElementsByClassName('info')[0].innerText = "Turn for " + turn;
+            }
+            else{
+                alert("You cannot make a move since game is over");
+            }
             checkWin();
-            if (!isgameover){
-                document.getElementsByClassName("info")[0].innerText  = "Turn for " + turn;
-            } 
+        }
+        else{
+            alert("Wrong Play");
         }
     })
 })
 
-// Add onclick listener to reset button
-reset.addEventListener('click', ()=>{
-    let boxtexts = document.querySelectorAll('.boxtext');
-    Array.from(boxtexts).forEach(element => {
-        element.innerText = ""
-    });
-    turn = "X"; 
-    isgameover = false
-    document.querySelector(".line").style.width = "0vw";
-    document.getElementsByClassName("info")[0].innerText  = "Turn for " + turn;
-    document.querySelector('.imgbox').getElementsByTagName('img')[0].style.width = "0px"
+
+//Javascript for reset button
+document.getElementById('reset').addEventListener('click',()=>{
+    let boxText = document.getElementsByClassName('boxText');
+    Array.from(boxText).forEach(e =>{
+        e.innerText = "";
+        gameOver = false;
+        turn = "X";
+        document.getElementsByClassName('info')[0].innerText = "Turn for X";
+        document.getElementsByClassName('gameInfo')[0].querySelector('img').style.width = '0px';
+        line[0].style.width  = '0vw';
+
+    })
 })
 
+
+//Javascript for background music
+backMusic.addEventListener('click', ()=>{
+    // music.play();
+    if(music.currentTime === 0 || music.paused){
+        music.currentTime = 0;
+        music.play();
+        backMusic.innerText = "OFF";
+    }
+    else{
+        music.pause();
+        backMusic.innerText = "ON";
+    }
+})
